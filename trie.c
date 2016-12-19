@@ -44,7 +44,7 @@ unsigned char insertNode (trie *pTrie, char *key)
     {
       ptr->al[key[i]-'a'] = createNewNode(pTrie, key[i]);
       ptr->al[key[i]-'a']->label = i + 1;
-      if (i==strlen(key)) ptr->al[key[i]-'a']->isLeaf = 1;
+      if (i== (strlen(key)-1)) ptr->al[key[i]-'a']->isLeaf = 1;
     }
 
     ptr = ptr->al[key[i]-'a'];
@@ -55,14 +55,11 @@ void printTrie (trieNode *pNode)
 {
   unsigned char i;
  
-  if (pNode && (pNode->isLeaf == 0))
-    printf ("%d -> ",pNode->label);
-
   for (i=0; i<26; i++)
   {
     if (pNode->al[i] != 0x0)
     {
-      printf ("%d : %c \n", pNode->al[i]->label, pNode->al[i]->key);
+      printf ("%d -> %d : %c \n", pNode->label, pNode->al[i]->label, pNode->al[i]->key);
       printTrie (pNode->al[i]);
     }
         
