@@ -14,12 +14,6 @@ typedef struct trie {
 } trie;
 
 
-trie *initTrie ()
-{
-  trie *ptr = calloc (1, sizeof (trie));
-  return ptr;
-}
-
 trieNode *createNewNode (trie *pTrie, char c)
 {
    trieNode *ptr = calloc (1, sizeof (trieNode));
@@ -28,32 +22,31 @@ trieNode *createNewNode (trie *pTrie, char c)
    return ptr;
 }
 
+trie *initTrie ()
+{
+  trie *ptr = calloc (1, sizeof (trie));
+  ptr->root = createNewNode (ptr, '\0');
+  ptr->root->label = 0;
+  
+  return ptr;
+}
+
 unsigned char insertNode (trie *pTrie, char *key)
 {
-  trieNode *ptr = 0x0;
+  trieNode *ptr = pTrie->root;
   unsigned char c, i;
   for (i=0; i< strlen(key); i++)
   {
-    if (! ptr)
-    { 
-      //identify root node with label 0 and key \0;
-      ptr = createNewNode (pTrie, '\0');
-      ptr->label = 0;
-      pTrie->root = ptr;
-      // since its root node , we proceed to creating the 
-      // first edge
-      ptr->al[key[i]-'a'] = createNewNode (pTrie, key[i]);
-      ptr->al[key[i]-'a']->label = i+1;
-    }
-    else
+    //identify root node with label 0 and key \0;
+    // since its root node , we proceed to creating the 
+    // first edge
+    if (ptr->al[key[i]-'a'] == 0x0)
     {
-      if (ptr->al[key[i]-'a'] == 0x0)
-      {
-        ptr->al[key[i]-'a'] = createNewNode(pTrie, key[i]);
-        ptr->al[key[i]-'a']->label = i + 1;
-      }
-        
+      ptr->al[key[i]-'a'] = createNewNode(pTrie, key[i]);
+      ptr->al[key[i]-'a']->label = i + 1;
+      if (i==strlen(key)) ptr->al[key[i]-'a']->isLeaf = 1;
     }
+
     ptr = ptr->al[key[i]-'a'];
   }
 }
@@ -61,8 +54,10 @@ unsigned char insertNode (trie *pTrie, char *key)
 void printTrie (trieNode *pNode)
 {
   unsigned char i;
-  
-  printf ("%d -> ",pNode->label);
+ 
+  if (pNode && (pNode->isLeaf == 0))
+    printf ("%d -> ",pNode->label);
+
   for (i=0; i<26; i++)
   {
     if (pNode->al[i] != 0x0)
@@ -82,7 +77,7 @@ void main ()
   trie *gTrie = initTrie ();
   printf ("Enter the number of strings : ");
   scanf ("%u", &count);
-  printf ("Enter  %u strings : %u ", count);
+  printf ("Enter  %u strings :", count);
   str = calloc (count, sizeof (str));
   for (i=0;i< count;i++)
   {
