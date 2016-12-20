@@ -24,6 +24,7 @@ trieNode *createNewNode (trie *pTrie, char c)
 
 trie *initTrie ()
 {
+  // initialize the trie with a root node 
   trie *ptr = calloc (1, sizeof (trie));
   ptr->root = createNewNode (ptr, '\0');
   ptr->root->label = 0;
@@ -37,9 +38,6 @@ unsigned char insertNode (trie *pTrie, char *key)
   unsigned char c, i;
   for (i=0; i< strlen(key); i++)
   {
-    //identify root node with label 0 and key \0;
-    // since its root node , we proceed to creating the 
-    // first edge
     if (ptr->al[key[i]-'a'] == 0x0)
     {
       ptr->al[key[i]-'a'] = createNewNode(pTrie, key[i]);
@@ -63,6 +61,27 @@ void printTrie (trieNode *pNode)
       printTrie (pNode->al[i]);
     }
         
+  }
+}
+
+trieNode *PrefixTrieMatch (trieNode *pNode, char *key)
+{
+  unsigned char i = 0;
+  trieNode *temp= 0x0;
+  
+  while (pNode)
+  {
+    if ((pNode->isLeaf) || ())
+    {
+      // print the path from root to this leaf ...
+      break;
+    }
+    else if (pNode->al[key[i]-'a']->key == key[i])
+    {
+      i++;
+      pNode = pNode->al[key[i]-'a'];
+    }
+    else break;
   }
 }
 
