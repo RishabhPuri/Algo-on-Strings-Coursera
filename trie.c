@@ -49,39 +49,44 @@ unsigned char insertNode (trie *pTrie, char *key)
   }
 }
 
-void printTrie (trieNode *pNode)
+void printTrie (trieNode *pNode, unsigned int keyLen)
 {
-  unsigned char i;
+  unsigned char i, j;
+  j = (keyLen == 0) ? 26 : keyLen;
  
-  for (i=0; i<26; i++)
+  for (i=0; i<j; i++)
   {
     if (pNode->al[i] != 0x0)
     {
       printf ("%d -> %d : %c \n", pNode->label, pNode->al[i]->label, pNode->al[i]->key);
-      printTrie (pNode->al[i]);
+      printTrie (pNode->al[i], j--);
     }
         
   }
 }
 
-trieNode *PrefixTrieMatch (trieNode *pNode, char *key)
+trieNode *PrefixTrieMatch (trieNode *pNode, char *key, unsigned int keyLen)
 {
   unsigned char i = 0;
   trieNode *temp= 0x0;
   
   while (pNode)
   {
-    if ((pNode->isLeaf) || ())
+    // a part of pattern lies at the end of text ...
+    if ((pNode->isLeaf) || (i == keyLen))
+        return temp;
+    else if ((pNode->al[key[i]-'a']) && (pNode->al[key[i]-'a']->key == key[i]))
     {
-      // print the path from root to this leaf ...
-      break;
-    }
-    else if (pNode->al[key[i]-'a']->key == key[i])
-    {
-      i++;
+      // capture the starting vertex of the edge holding the key like parent node
+      if ( !temp)
+        temp = pNode;
+
       pNode = pNode->al[key[i]-'a'];
+      i++;
     }
-    else break;
+    else 
+        return 0x0;
+    
   }
 }
 
@@ -104,6 +109,20 @@ void main ()
     memset (temp, 0, 3000);
   }
  
-  printTrie (gTrie->root); 
-  
+  printTrie (gTrie->root, 0); 
+
+  trieNode *startPatterNode ;
+  while (1)
+  {
+      startPatterNode = 0x0;
+      printf ("Enter pattern :");
+      scanf ("%s",temp);
+      if ((temp[0] == '\n') || (temp[0] == '\0'))
+        break;
+      
+      if (0x0 == (startPatterNode = PrefixTrieMatch (gTrie->root, temp, strlen(temp))))
+            printf ("pattern not found");
+      else
+        printTrie (startPatterNode, strlen(temp));
+  }
 }
